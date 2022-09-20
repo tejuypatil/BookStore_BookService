@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RestController
 public class BookStoreController {
     @Autowired
     public IBookService bookService;
@@ -40,7 +40,7 @@ public class BookStoreController {
     @DeleteMapping("/bookservice/{bookId}")
     public ResponseEntity<BookResponseDTO> deleteByBookId(@PathVariable("bookId") int bookId,@RequestHeader(name = "Authorization")String token){
         bookService.deleteBook(bookId,token);
-        return new ResponseEntity<BookResponseDTO>(new BookResponseDTO("Deleted successfully", (java.awt.print.Book) null),HttpStatus.OK);
+        return new ResponseEntity<BookResponseDTO>(new BookResponseDTO("Deleted successfully",null),HttpStatus.OK);
     }
 
     @GetMapping("/bookservice/search/{bookName}")

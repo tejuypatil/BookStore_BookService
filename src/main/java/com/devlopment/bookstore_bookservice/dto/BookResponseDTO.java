@@ -1,6 +1,7 @@
 package com.devlopment.bookstore_bookservice.dto;
 
-import java.awt.print.Book;
+
+import com.devlopment.bookstore_bookservice.entity.Book;
 
 public class BookResponseDTO {
     public String message;
@@ -8,11 +9,6 @@ public class BookResponseDTO {
     public BookResponseDTO(String message, Book book) {
         this.message = message;
         this.book= book;
-    }
-
-    public BookResponseDTO(String message, com.devlopment.bookstore_bookservice.entity.Book book) {
-
-        this.message = message;
     }
 
 

@@ -1,18 +1,19 @@
 package com.devlopment.bookstore_bookservice.service;
 
 import com.devlopment.bookstore_bookservice.dto.BookRequestDTO;
+import com.devlopment.bookstore_bookservice.dto.UserResponseDTO;
 import com.devlopment.bookstore_bookservice.entity.Book;
 import com.devlopment.bookstore_bookservice.entity.UserData;
 import com.devlopment.bookstore_bookservice.exception.InvalidTokenException;
 import com.devlopment.bookstore_bookservice.exception.UserIsNotAdmin;
 import com.devlopment.bookstore_bookservice.repository.BookRepository;
-import com.devlopment.bookstore_bookservice.repository.UserRepository;
 import com.devlopment.bookstore_bookservice.util.TokenUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Optional;
+
 @Service
 public class BookService implements IBookService {
     @Autowired
@@ -20,32 +21,34 @@ public class BookService implements IBookService {
     @Autowired
     public BookRepository bookRepository;
     @Autowired
-    UserRepository userRepository;
+    private RestTemplate restTemplate;
+
     @Override
     public List<Book> getAllBooks(String token)
     {
         int userId= tokenUtility.decodeToken(token);
-        Optional<UserData> optionalUserData = userRepository.findById(userId);
-        if(optionalUserData.isPresent())
-        {
+        UserResponseDTO userResponseDTO= restTemplate.getForObject("http://localhost:8086/userservice/" + userId,UserResponseDTO.class);
+        UserData userData = userResponseDTO.getUserData();
+        if(userData!= null){
             List<Book> bookList = bookRepository.findAll();
             if (bookList.isEmpty()){
                 return null;
             }
             return bookList;
-        }
+       }
         else {
             throw new InvalidTokenException(token);
         }
     }
 
     @Override
-    public Book createBook(String token, BookRequestDTO bookRequestDTO) {
+    public Book createBook( BookRequestDTO bookRequestDTO,String token) {
         int userId= tokenUtility.decodeToken(token);
-        Optional<UserData> optionalUserData = userRepository.findById(userId);
-        if(optionalUserData.isPresent())
+        UserResponseDTO userResponseDTO= restTemplate.getForObject("http://localhost:8086/userservice/" + userId,UserResponseDTO.class);
+        UserData userData = userResponseDTO.getUserData();
+        if(userData!= null)
         {
-            UserData loggedInUser = optionalUserData.get();
+            UserData loggedInUser = userResponseDTO.getUserData();
             if(loggedInUser.isAdmin())
             {
                 Book book = new Book(bookRequestDTO);
@@ -63,24 +66,29 @@ public class BookService implements IBookService {
     @Override
     public Book getBook(int bookId,String token) {
         int userId= tokenUtility.decodeToken(token);
-        Optional<UserData> optionalUserData = userRepository.findById(userId);
-        if(optionalUserData.isPresent())
+        UserResponseDTO userResponseDTO= restTemplate.getForObject("http://localhost:8086/userservice/" + userId,UserResponseDTO.class);
+        UserData userData = userResponseDTO.getUserData();
+        if(userData!= null)
         {
             return bookRepository.findById(bookId).orElse(null);
         }
-        else {
+        else
+        {
             throw new InvalidTokenException(token);
         }
     }
     @Override
     public Book updateBook(int bookId, BookRequestDTO bookRequestDTO,String token) {
         int userId= tokenUtility.decodeToken(token);
-        Optional<UserData> optionalUserData = userRepository.findById(userId);
-        if(optionalUserData.isPresent())
+        UserResponseDTO userResponseDTO= restTemplate.getForObject("http://localhost:8086/userservice/" + userId,UserResponseDTO.class);
+        UserData userData = userResponseDTO.getUserData();
+        if(userData!= null)
         {
-            Book book = this.getBook(bookId,token);
+            Book book =  bookRepository.findById(bookId).orElse(null);
             book.setName(bookRequestDTO.name);
             book.setAuthor(bookRequestDTO.author);
+            book.setPrice(bookRequestDTO.price);
+            book.setQuantity(bookRequestDTO.quantity);
             return bookRepository.save(book);
         }
         else {
@@ -90,8 +98,9 @@ public class BookService implements IBookService {
     @Override
     public void deleteBook(int bookId,String token) {
         int userId= tokenUtility.decodeToken(token);
-        Optional<UserData> optionalUserData = userRepository.findById(userId);
-        if(optionalUserData.isPresent())
+        UserResponseDTO userResponseDTO= restTemplate.getForObject("http://localhost:8086/userservice/" + userId,UserResponseDTO.class);
+        UserData userData = userResponseDTO.getUserData();
+        if(userData!= null)
         {
             bookRepository.deleteById(bookId);
         }
@@ -101,12 +110,14 @@ public class BookService implements IBookService {
     }
 
     public List <Book> findBookByName(String bookName,String token){
-        int userId= tokenUtility.decodeToken(token);
-        Optional<UserData> optionalUserData = userRepository.findById(userId);
-        if(optionalUserData.isPresent()) {
+            int userId= tokenUtility.decodeToken(token);
+            UserResponseDTO userResponseDTO= restTemplate.getForObject("http://localhost:8086/userservice/" + userId,UserResponseDTO.class);
+            UserData userData = userResponseDTO.getUserData();
+            if(userData!= null)
+            {
             List<Book> book = bookRepository.findBookByName(bookName);
             return book;
-        }
+     }
         else {
             throw new InvalidTokenException(token);
         }

@@ -16,18 +16,18 @@ public class BookStoreController {
     public IBookService bookService;
 
     @GetMapping("/bookservice")
-    public List<Book> getAllBooks(@RequestHeader(name = "Authorization")String token) {
+    public List<Book> getAllBooks(String token) {
         List<Book> bookList= bookService.getAllBooks(token);
         return bookList;
     }
     @PostMapping("/bookservice")
-    public ResponseEntity<BookResponseDTO> createBookData(@RequestBody BookRequestDTO bookRequestDTO, @RequestHeader(name = "Authorization") String token){
-        Book book = bookService.createBook(token,bookRequestDTO);
+    public ResponseEntity<BookResponseDTO> createBookData(@RequestBody BookRequestDTO bookRequestDTO,@RequestHeader (name = "Authorization")String token){
+        Book book = bookService.createBook(bookRequestDTO,token);
         return new ResponseEntity<BookResponseDTO>(new BookResponseDTO("Inserted book data successfully",book), HttpStatus.OK);
     }
 
     @GetMapping("bookservice/{bookId}")
-    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("bookId") int bookId, @RequestHeader(name = "Authorization") String token){
+    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("bookId") int bookId,@RequestHeader(name = "Authorization")String token){
         Book book = bookService.getBook(bookId,token);
         return new ResponseEntity<BookResponseDTO>(new BookResponseDTO("Get call for Id successful",book),HttpStatus.OK);
 

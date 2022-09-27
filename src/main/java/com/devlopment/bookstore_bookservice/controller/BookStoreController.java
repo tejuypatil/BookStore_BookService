@@ -27,7 +27,7 @@ public class BookStoreController {
     }
 
     @GetMapping("bookservice/{bookId}")
-    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("bookId") int bookId,@RequestHeader(name = "Authorization")String token){
+    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("bookId") int bookId,@RequestHeader (name = "Authorization")String token){
         Book book = bookService.getBook(bookId,token);
         return new ResponseEntity<BookResponseDTO>(new BookResponseDTO("Get call for Id successful",book),HttpStatus.OK);
 

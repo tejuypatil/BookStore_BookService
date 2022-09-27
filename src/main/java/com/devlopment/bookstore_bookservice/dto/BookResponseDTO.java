@@ -1,6 +1,4 @@
 package com.devlopment.bookstore_bookservice.dto;
-
-
 import com.devlopment.bookstore_bookservice.entity.Book;
 
 public class BookResponseDTO {

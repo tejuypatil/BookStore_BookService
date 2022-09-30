@@ -48,5 +48,11 @@ public class BookStoreController {
         List<Book> book= bookService.findBookByName(bookName,token);
         return book;
     }
+
+    @RequestMapping(value = "/add/book", method = RequestMethod.GET)
+    public Book addBook(@RequestParam("name") String name, @RequestParam("bookId") String bookId) {
+        return bookService.createBooks(name, bookId);
+
+    }
 }
 

@@ -122,4 +122,11 @@ public class BookService implements IBookService {
             throw new InvalidTokenException(token);
         }
     }
+    public Book createBooks(String name, String bookId) {
+
+        Book book = new Book();
+        book.setName(name);
+        book.setBookId(Integer.parseInt(bookId));
+        return book;
+    }
 }
